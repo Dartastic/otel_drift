@@ -2,7 +2,7 @@ name: otel_drift
 description: OpenTelemetry instrumentation for `package:drift`. Helpers
   to wrap drift queries / transactions with `db.system=sqlite` semconv
   spans.
-version: 0.1.0-wip
+version: 0.1.0-beta.1-wip
 repository: https://github.com/Dartastic/otel_drift
 homepage: https://dartastic.io
 
