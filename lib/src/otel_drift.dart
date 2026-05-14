@@ -5,7 +5,7 @@ import 'package:dartastic_opentelemetry/dartastic_opentelemetry.dart';
 
 import 'drift_suppression.dart';
 
-const _tracerName = 'dartastic_drift_otel';
+const _tracerName = 'otel_drift';
 const _dbSystem = 'sqlite';
 
 Tracer _tracer() => OTel.tracerProvider().getTracer(_tracerName);

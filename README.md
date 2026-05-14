@@ -1,4 +1,4 @@
-# dartastic_drift_otel
+# otel_drift
 
 OpenTelemetry instrumentation for
 [`package:drift`](https://pub.dev/packages/drift).

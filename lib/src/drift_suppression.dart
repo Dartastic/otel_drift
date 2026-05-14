@@ -3,7 +3,7 @@
 
 import 'dart:async';
 
-const Symbol _suppressKey = #dartastic_drift_otel_suppress;
+const Symbol _suppressKey = #otel_drift_suppress;
 
 bool driftInstrumentationSuppressed() {
   return Zone.current[_suppressKey] == true;
