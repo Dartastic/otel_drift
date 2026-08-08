@@ -3,6 +3,33 @@
 OpenTelemetry instrumentation for
 [`package:drift`](https://pub.dev/packages/drift).
 
+## Auto-instrumentation
+
+Wrap the `QueryExecutor` you open your database with (drift >= 2.14):
+
+```dart
+class AppDatabase extends _$AppDatabase {
+  AppDatabase(File file)
+      : super(NativeDatabase.createInBackground(file)
+            .interceptWith(OTelDriftInterceptor()));
+}
+```
+
+Every statement drift runs — select / insert / update / delete /
+custom / batch, plus transaction commit and rollback — gets a CLIENT
+span:
+
+- name: `drift <operation>`
+- `db.system.name = sqlite`, `db.operation.name = <operation>`
+- `db.operation.batch.size` on batches
+- `db.query.text` only with `OTelDriftInterceptor(captureQueryText:
+  true)` — off by default, statements can embed sensitive literals
+
+## Call-site helpers
+
+For spans labelled with the *intent* (which table, which operation)
+rather than the generated SQL, wrap DAO calls:
+
 ```dart
 final user = await tracedDriftQuery<User>(
   operation: 'select',
@@ -11,32 +38,17 @@ final user = await tracedDriftQuery<User>(
       .getSingle(),
 );
 
-final id = await tracedDriftQuery<int>(
-  operation: 'insert',
-  table: 'users',
-  invoke: () => db.into(db.users).insert(UsersCompanion.insert(name: 'Alice')),
-);
-
 await tracedDriftTransaction(() async {
   await db.into(db.users).insert(...);
   await db.into(db.orders).insert(...);
 });
 ```
 
-Each call opens a CLIENT span:
-- name: `drift <op> [<table>]`
-- `db.system = sqlite`, `db.operation = <op>`,
-  `db.collection.name = <table>`, `db.drift = true`
+These add `db.collection.name = <table>` and name the span
+`drift <operation> <table>`.
 
-## Why not an interceptor?
-
-drift goes through code-generated DAOs and doesn't expose a
-per-query interceptor hook. Wrapping at the call site (or in
-your data-layer methods) is the most portable point of
-instrumentation — and lets you label spans with the *intent*
-(`select users by id`) rather than the generated SQL.
-
-Suppression: `runWithoutDriftInstrumentationAsync`.
+Suppression: `runWithoutDriftInstrumentation` /
+`runWithoutDriftInstrumentationAsync`.
 
 ## License
 
