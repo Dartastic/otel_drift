@@ -1,7 +1,7 @@
 // Licensed under the Apache License, Version 2.0
 // Copyright 2025, Mindful Software LLC, All rights reserved.
 
-import 'package:dartastic_opentelemetry/dartastic_opentelemetry.dart';
+import 'package:dartastic_opentelemetry_api/dartastic_opentelemetry_api.dart';
 import 'package:drift/drift.dart';
 
 import 'drift_suppression.dart';
@@ -9,7 +9,7 @@ import 'drift_suppression.dart';
 const _tracerName = 'otel_drift';
 const _dbSystem = 'sqlite';
 
-Tracer _tracer() => OTel.tracerProvider().getTracer(_tracerName);
+APITracer _tracer() => OTelAPI.tracerProvider().getTracer(_tracerName);
 
 /// Shared span wrapper: opens a CLIENT span named
 /// `drift <operation> [<table>]`, runs [invoke], and flips the span to
@@ -26,7 +26,7 @@ Future<R> _traced<R>({
   final span = _tracer().startSpan(
     name,
     kind: SpanKind.client,
-    attributes: OTel.attributesFromMap(<String, Object>{
+    attributes: OTelAPI.attributesFromMap(<String, Object>{
       Db.dbSystemName.key: _dbSystem,
       Db.dbOperationName.key: operation,
       if (table != null) Db.dbCollectionName.key: table,
@@ -37,8 +37,8 @@ Future<R> _traced<R>({
   try {
     return await invoke();
   } catch (e, st) {
-    span.addAttributes(OTel.attributes([
-      OTel.attributeString(
+    span.addAttributes(OTelAPI.attributes([
+      OTelAPI.attributeString(
         ErrorAttributes.errorType.key,
         e.runtimeType.toString(),
       ),
