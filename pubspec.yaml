@@ -2,7 +2,7 @@ name: otel_drift
 description: OpenTelemetry instrumentation for package:drift. A drift
   QueryInterceptor emitting db.system.name=sqlite CLIENT spans per
   statement, plus traced call-site helpers.
-version: 0.3.0
+version: 0.3.1-wip
 repository: https://github.com/dartastic/otel_drift
 homepage: https://dartastic.io
 
